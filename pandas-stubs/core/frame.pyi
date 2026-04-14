@@ -1364,6 +1364,7 @@ class DataFrame(NDFrame, OpsMixin, _GetItemHack):
         margins_name: _str = "All",
         observed: _bool = True,
         sort: _bool = True,
+        **kwargs: Any,
     ) -> Self: ...
     def stack(
         self,
@@ -1563,6 +1564,7 @@ class DataFrame(NDFrame, OpsMixin, _GetItemHack):
         self,
         func: Callable[..., Any],
         na_action: Literal["ignore"] | None = None,
+        engine: Any = None,
         **kwargs: Any,
     ) -> Self: ...
     def join(

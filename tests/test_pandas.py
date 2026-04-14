@@ -403,6 +403,15 @@ def test_concat_args() -> None:
         pd.DataFrame,
     )
 
+    if TYPE_CHECKING_INVALID_USAGE:
+
+        def _cannot_pass_ignore_index_eq_true_and_keys() -> (  # pyright: ignore[reportUnusedFunction]
+            None
+        ):
+            assert_type(
+                pd.concat([df, df2], ignore_index=True, keys=["df1", "df2"]), Never
+            )
+
 
 def test_frame_subclass_concat() -> None:
     """Test concatenate subclass of DataFrame GH1396."""
@@ -445,12 +454,36 @@ def test_types_json_normalize() -> None:
         ),
         pd.DataFrame,
     )
+
+    # iterable case
+    check(
+        assert_type(pd.json_normalize(data=(dic for dic in data1)), pd.DataFrame),
+        pd.DataFrame,
+    )
+
     data2: dict[str, Any] = {"name": {"given": "Mose", "family": "Regner"}}
     check(
         assert_type(data2, dict[str, Any]),
         dict,
     )
     check(assert_type(pd.json_normalize(data=data2), pd.DataFrame), pd.DataFrame)
+
+    # series case
+    data = [
+        {
+            "id": 1,
+            "name": "Cole Volk",
+            "fitness": {"height": 130, "weight": 60},
+        },
+        {"name": "Mark Reg", "fitness": {"height": 130, "weight": 60}},
+        {
+            "id": 2,
+            "name": "Faye Raker",
+            "fitness": {"height": 130, "weight": 60},
+        },
+    ]
+    series = pd.Series(data, index=pd.Index(["a", "b", "c"]))
+    check(assert_type(pd.json_normalize(series), pd.DataFrame), pd.DataFrame)
 
 
 def test_isna() -> None:
@@ -2126,6 +2159,24 @@ def test_pivot_table() -> None:
             "dt": pd.date_range("2011-01-01", freq="D", periods=5),
         },
         index=idx,
+    )
+
+    df = pd.DataFrame(
+        {
+            "A": ["good", "bad", "good", "bad", "good"],
+            "B": ["one", "two", "one", "three", "two"],
+            "X": [2, 5, 4, 20, 10],
+        }
+    )
+
+    check(
+        assert_type(
+            pd.pivot_table(
+                df, index="A", columns="B", values="X", aggfunc="std", ddof=2
+            ),
+            pd.DataFrame,
+        ),
+        pd.DataFrame,
     )
 
 
