@@ -1617,6 +1617,11 @@ def test_index_droplevel() -> None:
     check(assert_type(mi.droplevel(["elk"]), pd.MultiIndex | pd.Index), pd.Index)
     check(assert_type(mi.droplevel(("elk",)), pd.MultiIndex | pd.Index), pd.Index)
     check(assert_type(mi.droplevel(0), pd.MultiIndex | pd.Index), pd.Index)
+    if TYPE_CHECKING_INVALID_USAGE:
+        idx.droplevel()  # type: ignore[call-arg] # pyright: ignore[reportCallIssue]
+        idx.droplevel(0)  # type: ignore[arg-type] # pyright: ignore[reportArgumentType]
+        idx.droplevel([0])  # type: ignore[arg-type] # pyright: ignore[reportArgumentType]
+        idx.droplevel("name")  # type: ignore[arg-type] # pyright: ignore[reportArgumentType]
 
 
 def test_index_setitem() -> None:
